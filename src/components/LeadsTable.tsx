@@ -18,7 +18,9 @@ function formatPhone(phone: string): string {
 
 function formatDate(iso: string | null): string {
   if (!iso) return "—";
-  return new Date(iso + "T12:00:00").toLocaleDateString("pt-BR");
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("pt-BR");
 }
 
 function timeAgo(iso: string): string {

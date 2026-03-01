@@ -14,7 +14,7 @@ interface Props {
 export default function DailyChart({ data }: Props) {
   const formatted = data.map((d) => ({
     ...d,
-    label: new Date(d.day + "T12:00:00").toLocaleDateString("pt-BR", {
+    label: new Date(d.day).toLocaleDateString("pt-BR", {
       day: "2-digit",
       month: "2-digit",
     }),
