@@ -29,20 +29,32 @@ export default function Dashboard() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
+
+    // Cada chamada independente — falha de uma não bloqueia as outras
     try {
-      const [s, l, f] = await Promise.all([
-        fetchStats(),
-        fetchLeads({ franchise, q: search, page }),
-        franchises.length ? Promise.resolve(franchises) : fetchFranchises(),
-      ]);
+      const s = await fetchStats();
       setStats(s);
-      setLeads(l);
-      if (!franchises.length) setFranchises(f as Franchise[]);
-    } catch {
-      // auth error handled by api.ts
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.error("Dashboard: erro ao buscar stats", err);
     }
+
+    try {
+      const l = await fetchLeads({ franchise, q: search, page });
+      setLeads(l);
+    } catch (err) {
+      console.error("Dashboard: erro ao buscar leads", err);
+    }
+
+    if (!franchises.length) {
+      try {
+        const f = await fetchFranchises();
+        setFranchises(f);
+      } catch (err) {
+        console.error("Dashboard: erro ao buscar franquias", err);
+      }
+    }
+
+    setLoading(false);
   }, [franchise, search, page]);
 
   useEffect(() => {
